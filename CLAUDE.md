@@ -27,3 +27,5 @@ There is no test runner configured in this repository yet.
 ## Reglas de colaboración
 
 - Nunca realizar ni planificar un commit sin una orden explícita del usuario para hacerlo.
+- Todos los planes deben guardarse en `docs/plans/` dentro del repositorio (un archivo Markdown por plan, nombrado de forma descriptiva) para poder ejecutarse posteriormente a su creación.
+- Los planes deben organizarse de forma optimizada en tokens: concisos, enfocados en un único objetivo por archivo, evitando duplicar contexto ya presente en el código o en otros documentos, y sin contenido innecesario que aumente el consumo de contexto al leerlos en el futuro.

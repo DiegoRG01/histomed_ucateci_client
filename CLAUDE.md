@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project state
 
-This is a freshly scaffolded Vite + React 19 + TypeScript client (the standard `vite create` React-TS template, largely unmodified). There is no routing, state management, API layer, or component structure established yet — `src/App.tsx` is still template placeholder content. When adding real features, you are largely establishing conventions from scratch rather than following existing patterns.
+Vite + React 19 + TypeScript client. Routing, auth infrastructure, and base UI components (shadcn/ui) are in place. The API base URL is configured via the `VITE_API_BASE_URL` environment variable (see `.env.example`).
 
 ## Commands
 
@@ -23,6 +23,23 @@ There is no test runner configured in this repository yet.
 - ESLint config (`eslint.config.js`) uses the flat config format with `typescript-eslint`, `eslint-plugin-react-hooks`, and `eslint-plugin-react-refresh` (Vite-mode). Type-aware linting is not enabled (see README for how to opt in with `recommendedTypeChecked`/`strictTypeChecked` if needed later).
 - Vite plugin is `@vitejs/plugin-react` (Oxc-based), not the SWC variant.
 - Static assets referenced via `/icons.svg#<id>` (in `public/`) are used as SVG sprite sheets (`<use href="/icons.svg#...">`), separate from imported assets in `src/assets/`.
+- Tailwind CSS v4 is wired via `@tailwindcss/vite` in `vite.config.ts` (no `tailwind.config.js` — v4 is CSS-first). Theme tokens are declared in an `@theme` block at the top of `src/styles/globals.css`.
+
+## Guía de estilos
+
+Paleta de colores del proyecto, expuesta como tokens Tailwind (`@theme` en `src/styles/globals.css`) y utilizable directamente como clases (`bg-primary`, `text-foreground`, `border-border`, etc.):
+
+| Token | Variable Tailwind | Valor |
+|---|---|---|
+| Primary | `--color-primary` | `#0057A8` |
+| Secondary | `--color-secondary` | `#C9A227` |
+| Background | `--color-background` | `#FFFFFF` |
+| Foreground | `--color-foreground` | `#0F172A` |
+| Muted | `--color-muted` | `#F8FAFC` |
+| Border | `--color-border` | `#E5E7EB` |
+| Success | `--color-success` | `#16A34A` |
+| Warning | `--color-warning` | `#F59E0B` |
+| Destructive | `--color-destructive` | `#DC2626` |
 
 ## Reglas de colaboración
 

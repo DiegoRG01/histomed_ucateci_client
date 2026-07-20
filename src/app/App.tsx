@@ -1,9 +1,12 @@
+import { AppProviders } from './providers/AppProviders'
+import { AppRoutes } from './routes'
+
 function App() {
   return (
-    <>
-      <h1>Hola mundo</h1>
-    </>
-  );
+    <AppProviders>
+      <AppRoutes />
+    </AppProviders>
+  )
 }
 
-export default App;
+export default App

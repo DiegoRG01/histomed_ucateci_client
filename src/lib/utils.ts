@@ -1,3 +1,6 @@
-// cn() helper and utility functions for shadcn/ui
-// This file is a placeholder until tailwind-merge and clsx are installed
-export {}
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}

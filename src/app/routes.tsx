@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import { ProtectedRoute } from '@/app/routes/ProtectedRoute'
+import { AppLayout } from '@/app/layout/AppLayout'
 import { LoginPage } from '@/features/auth/components/LoginPage'
 
 export function AppRoutes() {
@@ -7,13 +8,14 @@ export function AppRoutes() {
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route
-        path="/"
         element={
           <ProtectedRoute>
-            <div>Dashboard placeholder</div>
+            <AppLayout />
           </ProtectedRoute>
         }
-      />
+      >
+        <Route path="/" element={<div>Dashboard placeholder</div>} />
+      </Route>
     </Routes>
   )
 }

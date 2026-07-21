@@ -7,7 +7,13 @@ import { setUnauthorizedHandler } from '@/lib/api-client'
 function userFromToken(token: string): AuthUser | null {
   const claims = decodeJwt(token)
   if (!claims) return null
-  return { username: claims.sub, roles: claims.roles.split(',').filter(Boolean) }
+  // El backend emite las authorities de Spring Security con prefijo "ROLE_" (ver
+  // UserDetailsServiceImpl del repo core); se retira para que coincida con el tipo Role del frontend.
+  const roles = claims.roles
+    .split(',')
+    .filter(Boolean)
+    .map((r) => r.replace(/^ROLE_/, ''))
+  return { username: claims.sub, roles }
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {

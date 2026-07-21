@@ -4,8 +4,7 @@ import { navItems } from '@/app/layout/nav-config'
 import { LogOut } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-
-type Role = 'ADMIN' | 'ENFERMERIA' | 'ALMACEN' | 'CONSULTA'
+import type { Role } from '@/types/role'
 
 export function AppLayout() {
   const { user, logout } = useAuth()

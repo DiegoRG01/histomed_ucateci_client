@@ -8,8 +8,7 @@ import {
   Users,
   LayoutGrid,
 } from 'lucide-react'
-
-type Role = 'ADMIN' | 'ENFERMERIA' | 'ALMACEN' | 'CONSULTA'
+import type { Role } from '@/types/role'
 
 export type NavItem = {
   label: string

@@ -1,9 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-export function createCrudHooks<TDto, TCreate, TUpdate>(
+export function createCrudHooks<TDto, TCreate, TUpdate, TList = unknown>(
   queryKey: string,
   api: {
-    list: (params?: unknown) => Promise<unknown>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    list: (...args: any[]) => Promise<TList>
     getById: (id: number | string) => Promise<TDto>
     create: (body: TCreate) => Promise<TDto>
     update: (id: number | string, body: TUpdate) => Promise<TDto>
@@ -11,8 +12,8 @@ export function createCrudHooks<TDto, TCreate, TUpdate>(
   },
 ) {
   return {
-    useList: (params?: unknown) =>
-      useQuery({ queryKey: [queryKey, 'list', params], queryFn: () => api.list(params) }),
+    useList: (...args: unknown[]) =>
+      useQuery({ queryKey: [queryKey, 'list', args], queryFn: () => api.list(...args) }),
 
     useGetById: (id: number | string | undefined) =>
       useQuery({

@@ -10,4 +10,4 @@ export const {
   useCreate: useCreateTipoMedicamento,
   useUpdate: useUpdateTipoMedicamento,
   useRemove: useRemoveTipoMedicamento,
-} = createCrudHooks('tipos-medicamento', tiposMedicamentoApi as Parameters<typeof createCrudHooks>[1])
+} = createCrudHooks('tipos-medicamento', tiposMedicamentoApi)

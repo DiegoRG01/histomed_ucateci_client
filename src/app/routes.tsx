@@ -4,6 +4,7 @@ import { RoleGuard } from '@/app/routes/RoleGuard'
 import { AppLayout } from '@/app/layout/AppLayout'
 import { LoginPage } from '@/features/auth/components/LoginPage'
 import { TipoMedicamentoListPage } from '@/features/catalogos/components/TipoMedicamentoListPage'
+import { UsuarioListPage } from '@/features/usuarios/components/UsuarioListPage'
 
 export function AppRoutes() {
   return (
@@ -23,6 +24,14 @@ export function AppRoutes() {
           element={
             <RoleGuard allow={['ADMIN', 'ALMACEN']}>
               <TipoMedicamentoListPage />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/usuarios"
+          element={
+            <RoleGuard allow={['ADMIN']}>
+              <UsuarioListPage />
             </RoleGuard>
           }
         />

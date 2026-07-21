@@ -1,5 +1,6 @@
 import { createResourceApi } from '@/lib/api-factory'
 import { createCrudHooks } from '@/lib/crud-hooks-factory'
+import type { PageResponse } from '@/types/pagination'
 import type { TipoMedicamento, CreateTipoMedicamentoRequest } from '../types'
 
 const tiposMedicamentoApi = createResourceApi<TipoMedicamento, CreateTipoMedicamentoRequest>('/tipos-medicamento')
@@ -10,4 +11,7 @@ export const {
   useCreate: useCreateTipoMedicamento,
   useUpdate: useUpdateTipoMedicamento,
   useRemove: useRemoveTipoMedicamento,
-} = createCrudHooks('tipos-medicamento', tiposMedicamentoApi)
+} = createCrudHooks<TipoMedicamento, CreateTipoMedicamentoRequest, CreateTipoMedicamentoRequest, PageResponse<TipoMedicamento>>(
+  'tipos-medicamento',
+  tiposMedicamentoApi,
+)

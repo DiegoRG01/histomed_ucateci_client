@@ -17,6 +17,7 @@ export function AppRoutes() {
         }
       >
         <Route path="/" element={<div>Dashboard placeholder</div>} />
+        <Route path="/estudiantes" element={<div>Estudiantes placeholder</div>} />
         <Route
           path="/catalogos/tipos-medicamento"
           element={

@@ -42,4 +42,4 @@ export type MovimientoInventario = {
   usuarioId: number
 }
 
-export type CreateMovimientoInventarioRequest = Omit<MovimientoInventario, 'id'>
+export type CreateMovimientoInventarioRequest = Omit<MovimientoInventario, 'id' | 'fecha' | 'usuarioId'>

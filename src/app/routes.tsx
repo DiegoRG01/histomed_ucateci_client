@@ -1,12 +1,6 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
-import { useAuth } from '@/features/auth/hooks/useAuth'
+import { Routes, Route } from 'react-router-dom'
+import { ProtectedRoute } from '@/app/routes/ProtectedRoute'
 import { LoginPage } from '@/features/auth/components/LoginPage'
-import type { ReactNode } from 'react'
-
-function ProtectedRoute({ children }: { children: ReactNode }) {
-  const { isAuthenticated } = useAuth()
-  return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />
-}
 
 export function AppRoutes() {
   return (

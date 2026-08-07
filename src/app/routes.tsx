@@ -1,13 +1,13 @@
-import { Routes, Route } from 'react-router-dom'
-import { ProtectedRoute } from '@/app/routes/ProtectedRoute'
-import { RoleGuard } from '@/app/routes/RoleGuard'
-import { AppLayout } from '@/app/layout/AppLayout'
-import { LoginPage } from '@/features/auth/components/LoginPage'
-import { TipoMedicamentoListPage } from '@/features/catalogos/components/TipoMedicamentoListPage'
-import { UsuarioListPage } from '@/features/usuarios/components/UsuarioListPage'
-import { MedicamentoListPage } from '@/features/inventario/components/MedicamentoListPage'
-import { LoteInventarioListPage } from '@/features/inventario/components/LoteInventarioListPage'
-import { MovimientoInventarioListPage } from '@/features/inventario/components/MovimientoInventarioListPage'
+import { Routes, Route } from "react-router-dom";
+import { ProtectedRoute } from "@/app/routes/ProtectedRoute";
+import { RoleGuard } from "@/app/routes/RoleGuard";
+import { AppLayout } from "@/app/layout/AppLayout";
+import { LoginPage } from "@/features/auth/components/LoginPage";
+import { TipoMedicamentoListPage } from "@/features/catalogos/components/TipoMedicamentoListPage";
+import { UsuarioListPage } from "@/features/usuarios/components/UsuarioListPage";
+import { MedicamentoListPage } from "@/features/inventario/components/MedicamentoListPage";
+import { LoteInventarioListPage } from "@/features/inventario/components/LoteInventarioListPage";
+import { MovimientoInventarioListPage } from "@/features/inventario/components/MovimientoInventarioListPage";
 
 export function AppRoutes() {
   return (
@@ -21,11 +21,14 @@ export function AppRoutes() {
         }
       >
         <Route path="/" element={<div>Dashboard placeholder</div>} />
-        <Route path="/estudiantes" element={<div>Estudiantes placeholder</div>} />
+        <Route
+          path="/estudiantes"
+          element={<div>Estudiantes placeholder</div>}
+        />
         <Route
           path="/catalogos/tipos-medicamento"
           element={
-            <RoleGuard allow={['ADMIN', 'ALMACEN']}>
+            <RoleGuard allow={["ADMIN", "ALMACEN"]}>
               <TipoMedicamentoListPage />
             </RoleGuard>
           }
@@ -33,7 +36,7 @@ export function AppRoutes() {
         <Route
           path="/usuarios"
           element={
-            <RoleGuard allow={['ADMIN']}>
+            <RoleGuard allow={["ADMIN"]}>
               <UsuarioListPage />
             </RoleGuard>
           }
@@ -41,7 +44,7 @@ export function AppRoutes() {
         <Route
           path="/inventario/medicamentos"
           element={
-            <RoleGuard allow={['ADMIN', 'ALMACEN']}>
+            <RoleGuard allow={["ADMIN", "ALMACEN"]}>
               <MedicamentoListPage />
             </RoleGuard>
           }
@@ -49,7 +52,7 @@ export function AppRoutes() {
         <Route
           path="/inventario/lotes"
           element={
-            <RoleGuard allow={['ADMIN', 'ALMACEN']}>
+            <RoleGuard allow={["ADMIN", "ALMACEN"]}>
               <LoteInventarioListPage />
             </RoleGuard>
           }
@@ -57,12 +60,12 @@ export function AppRoutes() {
         <Route
           path="/inventario/movimientos"
           element={
-            <RoleGuard allow={['ADMIN', 'ALMACEN']}>
+            <RoleGuard allow={["ADMIN", "ALMACEN"]}>
               <MovimientoInventarioListPage />
             </RoleGuard>
           }
         />
       </Route>
     </Routes>
-  )
+  );
 }

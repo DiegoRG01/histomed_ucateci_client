@@ -13,11 +13,18 @@ import {
 } from 'lucide-react'
 import type { Role } from '@/types/role'
 
-export type NavItem = {
+export type NavChildItem = {
   label: string
   path: string
+  roles: Role[]
+}
+
+export type NavItem = {
+  label: string
+  path?: string
   icon: LucideIcon
   roles: Role[]
+  children?: NavChildItem[]
 }
 
 export type NavSection = {
@@ -43,7 +50,16 @@ export const navSections: NavSection[] = [
   {
     label: 'Inventario',
     items: [
-      { label: 'Inventario', path: '/inventario', icon: Package, roles: ['ADMIN', 'ALMACEN'] },
+      {
+        label: 'Inventario',
+        icon: Package,
+        roles: ['ADMIN', 'ALMACEN'],
+        children: [
+          { label: 'Medicamentos', path: '/inventario/medicamentos', roles: ['ADMIN', 'ALMACEN'] },
+          { label: 'Lotes', path: '/inventario/lotes', roles: ['ADMIN', 'ALMACEN'] },
+          { label: 'Movimientos', path: '/inventario/movimientos', roles: ['ADMIN', 'ALMACEN'] },
+        ],
+      },
       { label: 'Requisiciones', path: '/requisiciones', icon: ClipboardList, roles: ['ADMIN', 'ALMACEN', 'ENFERMERIA'] },
     ],
   },

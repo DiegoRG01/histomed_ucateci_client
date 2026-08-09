@@ -32,6 +32,15 @@
   --color-destructive: #dc2626;
   --color-destructive-foreground: #ffffff;
 
+  --color-sidebar: #ffffff;
+  --color-sidebar-foreground: #0f172a;
+  --color-sidebar-primary: #0057a8;
+  --color-sidebar-primary-foreground: #ffffff;
+  --color-sidebar-accent: #eef4fb;
+  --color-sidebar-accent-foreground: #0057a8;
+  --color-sidebar-border: #e5e7eb;
+  --color-sidebar-ring: #0057a8;
+
   --radius: 0.5rem;
 }
 

@@ -7,42 +7,62 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+} from '@/components/ui/sidebar'
 import { LogOut } from 'lucide-react'
 
-type SidebarUserMenuProps = {
-  collapsed: boolean
-}
-
-export function SidebarUserMenu({ collapsed }: SidebarUserMenuProps) {
+export function SidebarUserMenu() {
   const { user, logout } = useAuth()
+  const { state, isMobile } = useSidebar()
 
   if (!user) return null
 
+  const collapsed = state === 'collapsed' && !isMobile
   const initials = user.username.slice(0, 2).toUpperCase()
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent">
-          <Avatar size={collapsed ? 'default' : 'sm'}>
-            <AvatarFallback>{initials}</AvatarFallback>
-          </Avatar>
-          {!collapsed && (
-            <div className="flex flex-col items-start gap-0.5 overflow-hidden">
-              <span className="truncate text-sm font-medium">{user.username}</span>
-              <Badge variant="secondary" className="text-[10px]">
-                {user.roles[0]}
-              </Badge>
-            </div>
-          )}
-        </button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent side={collapsed ? 'right' : 'top'} align="start" className="w-48">
-        <DropdownMenuItem onClick={logout}>
-          <LogOut className="size-4" />
-          Cerrar sesión
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <SidebarMenu>
+      <SidebarMenuItem>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <SidebarMenuButton
+              size="lg"
+              aria-label={user.username}
+              className="gap-3 data-[state=open]:bg-sidebar-accent"
+            >
+              <Avatar className="size-8">
+                <AvatarFallback className="text-xs">{initials}</AvatarFallback>
+              </Avatar>
+              {!collapsed && (
+                <div className="flex flex-col items-start gap-0.5 overflow-hidden">
+                  <span className="truncate text-sm font-medium">
+                    {user.username}
+                  </span>
+                  {user.roles[0] ? (
+                    <Badge variant="secondary" className="text-[10px]">
+                      {user.roles[0]}
+                    </Badge>
+                  ) : null}
+                </div>
+              )}
+            </SidebarMenuButton>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            side={collapsed ? 'right' : 'top'}
+            align="start"
+            className="w-48"
+          >
+            <DropdownMenuItem onClick={logout}>
+              <LogOut className="size-4" />
+              Cerrar sesión
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </SidebarMenuItem>
+    </SidebarMenu>
   )
 }

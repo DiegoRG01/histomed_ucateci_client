@@ -8,6 +8,7 @@ import { UsuarioListPage } from "@/features/usuarios/components/UsuarioListPage"
 import { MedicamentoListPage } from "@/features/inventario/components/MedicamentoListPage";
 import { LoteInventarioListPage } from "@/features/inventario/components/LoteInventarioListPage";
 import { MovimientoInventarioListPage } from "@/features/inventario/components/MovimientoInventarioListPage";
+import { PlaceholderPage } from "@/components/PlaceholderPage";
 
 export function AppRoutes() {
   return (
@@ -20,10 +21,30 @@ export function AppRoutes() {
           </ProtectedRoute>
         }
       >
-        <Route path="/" element={<div>Dashboard placeholder</div>} />
+        <Route path="/" element={<PlaceholderPage title="Dashboard" />} />
         <Route
           path="/estudiantes"
-          element={<div>Estudiantes placeholder</div>}
+          element={<PlaceholderPage title="Estudiantes" />}
+        />
+        <Route
+          path="/visitas"
+          element={<PlaceholderPage title="Visitas" />}
+        />
+        <Route
+          path="/donaciones"
+          element={<PlaceholderPage title="Donaciones" />}
+        />
+        <Route
+          path="/requisiciones"
+          element={<PlaceholderPage title="Requisiciones" />}
+        />
+        <Route
+          path="/reportes"
+          element={<PlaceholderPage title="Reportes" />}
+        />
+        <Route
+          path="/auditoria"
+          element={<PlaceholderPage title="Auditoría" />}
         />
         <Route
           path="/catalogos/tipos-medicamento"

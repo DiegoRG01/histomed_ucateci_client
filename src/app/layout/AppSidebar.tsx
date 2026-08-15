@@ -20,7 +20,7 @@ export function AppSidebar() {
           className="h-14 flex-1 cursor-default hover:bg-transparent active:bg-transparent"
         >
           <div className="flex items-center gap-2 overflow-hidden">
-            <SidebarTrigger className="hidden shrink-0 md:flex group-data-[collapsible=icon]" />
+            <SidebarTrigger className="hidden shrink-0 md:flex group-data-[collapsible=icon] cursor-pointer" />
 
             <div className="flex min-w-0 flex-col overflow-hidden transition-all duration-200 ease-linear group-data-[collapsible=icon]:max-w-0 group-data-[collapsible=icon]:opacity-0 group-data-[collapsible=icon]:-translate-x-2 group-data-[collapsible=icon]:pointer-events-none">
               <span className="text-lg font-bold text-primary whitespace-nowrap">

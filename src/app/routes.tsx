@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Navigate, Routes, Route } from "react-router-dom";
 import { ProtectedRoute } from "@/app/routes/ProtectedRoute";
 import { RoleGuard } from "@/app/routes/RoleGuard";
 import { AppLayout } from "@/app/layout/AppLayout";
@@ -9,6 +9,9 @@ import { MedicamentoListPage } from "@/features/inventario/components/Medicament
 import { LoteInventarioListPage } from "@/features/inventario/components/LoteInventarioListPage";
 import { MovimientoInventarioListPage } from "@/features/inventario/components/MovimientoInventarioListPage";
 import { PlaceholderPage } from "@/components/PlaceholderPage";
+import { DashboardPage } from "@/features/dashboard/components/DashboardPage";
+import { EstudianteFichaPage } from "@/features/estudiantes/components/EstudianteFichaPage";
+import { EstudianteListPage } from "@/features/estudiantes/components/EstudianteListPage";
 
 export function AppRoutes() {
   return (
@@ -21,10 +24,30 @@ export function AppRoutes() {
           </ProtectedRoute>
         }
       >
-        <Route path="/" element={<PlaceholderPage title="Dashboard" />} />
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route
+          path="/dashboard"
+          element={
+            <RoleGuard allow={["ADMIN", "ENFERMERIA", "ALMACEN", "CONSULTA"]}>
+              <DashboardPage />
+            </RoleGuard>
+          }
+        />
         <Route
           path="/estudiantes"
-          element={<PlaceholderPage title="Estudiantes" />}
+          element={
+            <RoleGuard allow={["ADMIN", "ENFERMERIA", "CONSULTA"]}>
+              <EstudianteListPage />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/estudiantes/:id"
+          element={
+            <RoleGuard allow={["ADMIN", "ENFERMERIA", "CONSULTA"]}>
+              <EstudianteFichaPage />
+            </RoleGuard>
+          }
         />
         <Route
           path="/visitas"

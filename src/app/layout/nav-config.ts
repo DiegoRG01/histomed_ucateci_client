@@ -36,7 +36,7 @@ export const navSections: NavSection[] = [
   {
     label: 'Principal',
     items: [
-      { label: 'Dashboard', path: '/', icon: LayoutDashboard, roles: ['ADMIN', 'ENFERMERIA', 'ALMACEN', 'CONSULTA'] },
+      { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard, roles: ['ADMIN', 'ENFERMERIA', 'ALMACEN', 'CONSULTA'] },
     ],
   },
   {

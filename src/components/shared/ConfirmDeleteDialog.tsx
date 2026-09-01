@@ -17,6 +17,8 @@ type ConfirmDeleteDialogProps = {
   description: string
   onConfirm: () => void
   isPending?: boolean
+  confirmLabel?: string
+  pendingLabel?: string
 }
 
 function ConfirmDeleteDialog({
@@ -25,6 +27,8 @@ function ConfirmDeleteDialog({
   description,
   onConfirm,
   isPending = false,
+  confirmLabel = "Desactivar",
+  pendingLabel = "Desactivando...",
 }: ConfirmDeleteDialogProps) {
   return (
     <AlertDialog>
@@ -41,7 +45,7 @@ function ConfirmDeleteDialog({
             onClick={onConfirm}
             disabled={isPending}
           >
-            {isPending ? "Desactivando..." : "Desactivar"}
+            {isPending ? pendingLabel : confirmLabel}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

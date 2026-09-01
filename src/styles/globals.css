@@ -1,0 +1,73 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme {
+  --color-primary: #0057a8;
+  --color-primary-foreground: #ffffff;
+
+  --color-secondary: #c9a227;
+  --color-secondary-foreground: #1f2937;
+
+  --color-background: #ffffff;
+  --color-foreground: #0f172a;
+
+  --color-muted: #f8fafc;
+  --color-muted-foreground: #64748b;
+
+  --color-border: #e5e7eb;
+  --color-input: #e5e7eb;
+  --color-ring: #0057a8;
+
+  --color-card: #ffffff;
+  --color-card-foreground: #0f172a;
+
+  --color-popover: #ffffff;
+  --color-popover-foreground: #0f172a;
+
+  --color-accent: #f8fafc;
+  --color-accent-foreground: #0f172a;
+
+  --color-success: #16a34a;
+  --color-warning: #f59e0b;
+
+  --color-destructive: #dc2626;
+  --color-destructive-foreground: #ffffff;
+
+  --color-sidebar: #ffffff;
+  --color-sidebar-foreground: #0f172a;
+  --color-sidebar-primary: #0057a8;
+  --color-sidebar-primary-foreground: #ffffff;
+  --color-sidebar-accent: #eef4fb;
+  --color-sidebar-accent-foreground: #0057a8;
+  --color-sidebar-border: #e5e7eb;
+  --color-sidebar-ring: #0057a8;
+
+  --radius: 0.5rem;
+
+  --animate-collapsible-down: collapsible-down 0.2s ease-out;
+  --animate-collapsible-up: collapsible-up 0.2s ease-out;
+}
+
+@keyframes collapsible-down {
+  from {
+    height: 0;
+  }
+
+  to {
+    height: var(--radix-collapsible-content-height);
+  }
+}
+
+@keyframes collapsible-up {
+  from {
+    height: var(--radix-collapsible-content-height);
+  }
+
+  to {
+    height: 0;
+  }
+}
+
+body {
+  @apply bg-background text-foreground;
+}

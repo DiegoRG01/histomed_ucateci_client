@@ -9,14 +9,10 @@ emergencia consolidada** (ambos de solo lectura, no CRUD).
 
 **Prerrequisito:** `00-fundamentos-crud.md`. Depende de `03-inventario.md` (M3 se construye antes que M2 en el
 backend porque `Alergia.medicamento` y `MedicamentoHabitual.medicamento` son FK reales a `Medicamento`) y de
-`01-catalogos-base.md` (`Carrera`, `SeguroMedico` si tienen endpoint propio).
+`01-catalogos-base.md` (`Carrera` con endpoint propio; `SeguroMedico` semillado).
 
 Referencia backend: `docs/02-modelo-dominio.md` (bloque Estudiantes y ficha médica) y
 `docs/planes/plan-02-estudiantes-ficha-medica.md` del repo `histomed_ucateci`.
-
-**Nota de tamaño:** si al implementar este módulo la cantidad de pantallas (Estudiante + 6 sub-recursos) resulta
-inmanejable en un solo esfuerzo, dividir en `04a-estudiantes-core.md` (Estudiante + aptitud + ficha de emergencia)
-y `04b-estudiantes-ficha-clinica.md` (los 6 sub-recursos). Esta decisión se toma al implementar, no de antemano.
 
 ## Estado backend
 
@@ -33,23 +29,31 @@ y `04b-estudiantes-ficha-clinica.md` (los 6 sub-recursos). Esta decisión se tom
 | GET | `/api/v1/estudiantes/{id}/aptitud-donacion` | ENFERMERIA, ADMIN, CONSULTA | Solo lectura — `AptitudDonacionResponse` |
 | GET | `/api/v1/estudiantes/{id}/ficha` | ENFERMERIA, ADMIN, CONSULTA | Solo lectura — `FichaEmergenciaResponse` |
 
-Los sub-recursos (`ContactoEstudiante`, `MedicoReferencia`, `EnfermedadEstudiante`, `CondicionFisicaEstudiante`,
-`AlergiaEstudiante`, `MedicamentoHabitual`) tienen repositorios confirmados en el repo pero **sus controllers no se
-exploraron en esta sesión** — confirmar paths reales (se asume anidados bajo `/estudiantes/{id}/...`) y roles antes
-de implementar.
+Los 6 sub-recursos (`ContactoEstudiante`, `MedicoReferencia`, `EnfermedadEstudiante`, `CondicionFisicaEstudiante`,
+`AlergiaEstudiante`, `MedicamentoHabitual`) tienen controllers REST confirmados con DTOs JSON tipados, anidados bajo
+`/api/v1/estudiantes/{id}/...` (contratos completos en
+[03-endpoints-estudiantes.md](../plans/frontend/03-endpoints-estudiantes.md)). Enfermedades y Medicamentos
+habituales figuran *en construcción* en el backend.
 
 ## Endpoints consumidos
 
-Ver tabla de `Estudiante` arriba (confirmada). Para sub-recursos, patrón esperado (a confirmar):
+Ver tabla de `Estudiante` arriba (confirmada). Sub-recursos anidados bajo `/api/v1/estudiantes/{id}/...`
+(salvo el catálogo plano `/contactos`), todos con request/response JSON tipados:
 
-| Sub-recurso | Método | Path esperado |
-|---|---|---|
-| ContactoEstudiante | GET/POST/PUT/DELETE | `/api/v1/estudiantes/{estudianteId}/contactos` |
-| MedicoReferencia | GET/POST/PUT/DELETE | `/api/v1/estudiantes/{estudianteId}/medicos-referencia` |
-| EnfermedadEstudiante | GET/POST/PUT/DELETE | `/api/v1/estudiantes/{estudianteId}/enfermedades` |
-| CondicionFisicaEstudiante | GET/POST/PUT/DELETE | `/api/v1/estudiantes/{estudianteId}/condiciones-fisicas` |
-| AlergiaEstudiante | GET/POST/PUT/DELETE | `/api/v1/estudiantes/{estudianteId}/alergias` |
-| MedicamentoHabitual | GET/POST/PUT/DELETE | `/api/v1/estudiantes/{estudianteId}/medicamentos-habituales` |
+| Recurso | Path | Verbos | Request | Response |
+|---|---|---|---|---|
+| Alergia | `/estudiantes/{id}/alergias` | POST / GET / GET`{id}` / PUT / DELETE | `{nombre, tipoAlergia, medicamentoId?}` | `{id, nombre, tipoAlergia, medicamentoId\|null}` |
+| Condición física | `/estudiantes/{id}/condiciones` | POST / GET / GET`{id}` / PUT / DELETE | `{nombre, descripcion?, impideDonacionSangre}` | `{id, nombre, descripcion\|null, impideDonacionSangre}` |
+| Enfermedad | `/estudiantes/{id}/enfermedades` | POST / GET / GET`{id}` / PUT / DELETE *(en construcción)* | `{nombre, esCronica, impideDonacionSangre}` | `{id, nombre, esCronica, impideDonacionSangre}` |
+| Medicamento habitual | `/estudiantes/{id}/medicamentos` | POST / GET / GET`{id}` / PUT / DELETE *(en construcción)* | `{medicamentoId, dosis?, frecuencia?}` | `{id, estudianteId, medicamentoId, medicamentoNombre, dosis\|null, frecuencia\|null}` |
+| Contacto (catálogo) | `/contactos` | POST / GET / GET`{id}` | `{nombre, telefono, email?}` | `{id, nombre, telefono, email\|null}` |
+| ContactoEstudiante | `/estudiantes/{id}/contactos` | POST / GET / GET`{id}` / PUT / DELETE | POST: `{contactoId, parentesco?, esPrincipal?}` · PUT: `{parentesco?, esPrincipal}` | `{id, estudianteId, contactoId, contactoNombre, contactoTelefono, contactoEmail\|null, parentesco\|null, esPrincipal}` |
+| Médico de referencia (singleton) | `/estudiantes/{id}/medico-referencia` | POST (upsert) / GET (404 si no hay) | `{nombre, especialidad?, telefono?, hospitalClinica?}` | `{id, nombre, especialidad\|null, telefono\|null, hospitalClinica\|null, estudianteId}` |
+
+Notas:
+- `TipoAlergia = 'MEDICAMENTO' | 'ALIMENTO' | 'AMBIENTAL' | 'OTRO'`; `medicamentoId` solo aplica cuando el tipo es `MEDICAMENTO`.
+- Un solo contacto principal por estudiante: el backend desmarca automáticamente el anterior.
+- `MedicoReferencia` es singleton por estudiante (POST hace upsert; GET responde 404 si no existe).
 
 ## Modelo de datos frontend (types.ts)
 
@@ -74,37 +78,42 @@ export type CreateEstudianteRequest = {
   email: string; telefono?: string; carreraId: number; seguroMedicoId?: number
 }
 
-export type AptitudDonacionResponse = { apto: boolean; motivos: string[] } // confirmar shape real
-export type FichaEmergenciaResponse = { /* confirmar shape real al implementar */ }
+export type AptitudDonacionResponse = { apto: boolean; motivos: string[] } // confirmado
+// FichaEmergenciaResponse: shape completo confirmado — ver src/features/estudiantes/types.ts
+// y el JSON de ejemplo en 03-endpoints-estudiantes.md
 ```
 
-Tipos de sub-recursos (`ContactoEstudiante`, etc.) se definen igual, en `src/features/estudiantes/types.ts` o
-archivos separados si crecen mucho — decidir al implementar según volumen.
+Los tipos request/response de los sub-recursos están definidos en `src/features/estudiantes/types.ts`.
 
-## Rutas frontend nuevas
+## Rutas frontend
 
 - `/estudiantes` (lista paginada + búsqueda por `filtro`) — `RoleGuard allow={['ADMIN','ENFERMERIA','CONSULTA']}`
-- `/estudiantes/nuevo` — `RoleGuard allow={['ADMIN','ENFERMERIA']}`
-- `/estudiantes/:id` (detalle: datos core + tabs de sub-recursos + aptitud donación + ficha emergencia) —
+- `/estudiantes/nuevo` — página completa `EstudianteFormPage` — `RoleGuard allow={['ADMIN','ENFERMERIA']}`
+- `/estudiantes/:id` — ficha de solo lectura (`EstudianteFichaPage`: datos core, historial clínico,
+  contacto/referencia y aptitud de donación a partir de `GET /{id}/ficha`) —
   `RoleGuard allow={['ADMIN','ENFERMERIA','CONSULTA']}`
-- `/estudiantes/:id/editar` — `RoleGuard allow={['ADMIN','ENFERMERIA']}`
+- `/estudiantes/:id/editar` — página completa `EstudianteFormPage` con Tabs ("Datos personales" /
+  "Referencias" / "Historial clínico") — `RoleGuard allow={['ADMIN','ENFERMERIA']}`
 
-Los sub-recursos no tienen ruta propia — se gestionan como tabs/secciones dentro de `/estudiantes/:id` (edición
-inline vía `FormDialog`, no navegación a otra página).
+Al crear, las tabs de sub-recursos permanecen bloqueadas (con tooltip) hasta guardar "Datos personales";
+el `POST /estudiantes` redirige con `replace` a `/estudiantes/:id/editar`.
 
-## Componentes a crear
+## Componentes
 
 `src/features/estudiantes/components/`:
 - `EstudianteListPage.tsx` — `PageHeader` + búsqueda (`filtro`) + `DataTable` paginado + `Pagination`.
-- `EstudianteForm.tsx` — selector de `Carrera`/`SeguroMedico` (de `01-catalogos-base.md` si tienen endpoint, si no,
-  input libre temporal), selects para `Sexo`/`GrupoSanguineo` (enums estáticos).
-- `EstudianteDetailPage.tsx` — datos core (solo lectura + botón editar) + tabs: Contactos, Médico de referencia,
-  Enfermedades, Condiciones físicas, Alergias, Medicamentos habituales, Aptitud para donar (read-only), Ficha de
-  emergencia (read-only).
-- Un componente por sub-recurso dentro de `components/ficha/`: `ContactosTab.tsx`, `MedicosReferenciaTab.tsx`,
-  `EnfermedadesTab.tsx`, `CondicionesFisicasTab.tsx`, `AlergiasTab.tsx`, `MedicamentosHabitualesTab.tsx` — cada uno
-  con su propia mini-tabla + `FormDialog` de alta/edición, reusando `DataTable`/`ConfirmDeleteDialog`.
-- `AptitudDonacionCard.tsx`, `FichaEmergenciaCard.tsx` — solo lectura, sin acciones.
+- `EstudianteFormPage.tsx` — orquesta las rutas nuevo/editar: Tabs "Datos personales" / "Referencias" /
+  "Historial clínico", con bloqueo de sub-recursos hasta guardar datos core.
+- `DatosPersonalesTab.tsx` — reutiliza `EstudianteForm.tsx` (selector de `Carrera`/`SeguroMedico`,
+  selects `Sexo`/`GrupoSanguineo`).
+- `ReferenciasTab.tsx` — compone `MedicoReferenciaSection` + `ContactosSection`.
+- `HistorialClinicoTab.tsx` — compone `AlergiasSection`, `CondicionesSection`, `EnfermedadesSection`,
+  `MedicamentosHabitualesSection`.
+- Un `*Form.tsx` + `*Section.tsx` por sub-recurso (mini-tabla + diálogo de alta/edición, reusando
+  `DataTable`/`ConfirmDeleteDialog`); `ContactoForm` soporta modo crear/editar (flujo "crear y vincular":
+  `POST /contactos` + `POST /estudiantes/{id}/contactos`).
+- `EstudianteFichaPage.tsx` — ficha de solo lectura en `/estudiantes/:id` (botón Editar para
+  ADMIN/ENFERMERIA, Desactivar solo ADMIN).
 
 ## Hooks a crear
 
@@ -126,25 +135,19 @@ inline vía `FormDialog`, no navegación a otra página).
 ## Casos especiales / reglas de negocio UI
 
 - Borrado de `Estudiante` = desactivar, rol `ADMIN` únicamente (distinto de crear/editar que permite `ENFERMERIA`).
-- `AlergiaEstudiante.impideDonacionOverride` y equivalentes en `EnfermedadEstudiante`/`CondicionFisicaEstudiante`:
-  mostrar en el form como override opcional del default del catálogo (`impideDonacionSangre`), con texto explicando
-  que es una excepción caso-por-caso, no el valor por defecto.
-- `AptitudDonacionCard`: mostrar de forma prominente si el estudiante NO es apto (regla de negocio agregada del
-  backend), no requiere lógica adicional en frontend.
-- Alergia con `tipoAlergia = MEDICAMENTO` requiere seleccionar un `Medicamento` (de `03-inventario.md`); otros tipos
-  de alergia no.
+- `impideDonacionSangre` es un campo directo del formulario en Condiciones físicas y Enfermedades (checkbox);
+  alimenta el cálculo de aptitud de donación del backend.
+- Un solo contacto principal por estudiante: al marcar uno como principal, el backend desmarca automáticamente
+  el anterior (sin lógica extra en frontend).
+- Aptitud de donación en la ficha (`EstudianteFichaPage`): mostrar de forma prominente si el estudiante NO es apto
+  (regla de negocio agregada del backend), no requiere lógica adicional en frontend.
+- Alergias: `tipoAlergia` ∈ {MEDICAMENTO, ALIMENTO, AMBIENTAL, OTRO}; `medicamentoId` (de `03-inventario.md`)
+  solo aplica cuando el tipo es `MEDICAMENTO`.
 
 ## Dependencias y orden de implementación
 
 1. `00-fundamentos-crud.md`.
 2. `03-inventario.md` (FK real a `Medicamento` en `Alergia`/`MedicamentoHabitual`).
-3. `01-catalogos-base.md` si `Carrera`/`SeguroMedico` tienen endpoint propio confirmado.
+3. `01-catalogos-base.md` (`Carrera` tiene endpoint propio confirmado; `SeguroMedico` sigue semillado).
 4. Orden interno: `Estudiante` CRUD core → tabs de sub-recursos (cualquier orden entre ellos) → cards de solo
    lectura (aptitud, ficha emergencia) al final (son las más simples, dependen de que el estudiante ya exista).
-
-## Pendientes / preguntas abiertas
-
-- Confirmar paths reales de los 6 controllers de sub-recursos (no explorados en detalle esta sesión, solo se
-  confirmó que existen los repositorios).
-- Confirmar shape real de `AptitudDonacionResponse` y `FichaEmergenciaResponse`.
-- Decidir si este doc se divide en `04a`/`04b` una vez visto el tamaño real al implementar.

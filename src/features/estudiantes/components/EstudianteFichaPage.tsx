@@ -106,7 +106,7 @@ export function EstudianteFichaPage() {
         action={
           <div className="flex flex-wrap items-center gap-2">
             {puedeEditar && (
-              <Button variant="outline" onClick={() => navigate(`/estudiantes?editar=${numericId}`)}>
+              <Button variant="outline" onClick={() => navigate(`/estudiantes/${numericId}/editar`)}>
                 <PencilIcon /> Editar
               </Button>
             )}

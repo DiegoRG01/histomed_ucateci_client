@@ -11,6 +11,7 @@ import { MovimientoInventarioListPage } from "@/features/inventario/components/M
 import { PlaceholderPage } from "@/components/PlaceholderPage";
 import { DashboardPage } from "@/features/dashboard/components/DashboardPage";
 import { EstudianteFichaPage } from "@/features/estudiantes/components/EstudianteFichaPage";
+import { EstudianteFormPage } from "@/features/estudiantes/components/EstudianteFormPage";
 import { EstudianteListPage } from "@/features/estudiantes/components/EstudianteListPage";
 
 export function AppRoutes() {
@@ -42,10 +43,26 @@ export function AppRoutes() {
           }
         />
         <Route
+          path="/estudiantes/nuevo"
+          element={
+            <RoleGuard allow={["ADMIN", "ENFERMERIA"]}>
+              <EstudianteFormPage />
+            </RoleGuard>
+          }
+        />
+        <Route
           path="/estudiantes/:id"
           element={
             <RoleGuard allow={["ADMIN", "ENFERMERIA", "CONSULTA"]}>
               <EstudianteFichaPage />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/estudiantes/:id/editar"
+          element={
+            <RoleGuard allow={["ADMIN", "ENFERMERIA"]}>
+              <EstudianteFormPage />
             </RoleGuard>
           }
         />

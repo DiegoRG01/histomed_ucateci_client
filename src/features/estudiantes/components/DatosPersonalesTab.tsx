@@ -4,7 +4,6 @@ import { z } from 'zod/v4'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
 
-import { FormDialog } from '@/components/shared/FormDialog'
 import { mapApiErrorToForm } from '@/lib/form-errors'
 import type { ApiError } from '@/lib/api-client'
 import { useEstudiantes } from '../hooks/use-estudiantes'
@@ -62,26 +61,23 @@ function resetValuesFrom(row: EstudianteResponse): EstudianteFormValues {
   }
 }
 
-type EstudianteFormDialogProps = {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  editing: EstudianteResponse | null
+type DatosPersonalesTabProps = {
+  estudiante: EstudianteResponse | null
+  onCreated: (result: EstudianteResponse) => void
 }
 
-export function EstudianteFormDialog({ open, onOpenChange, editing }: EstudianteFormDialogProps) {
+export function DatosPersonalesTab({ estudiante, onCreated }: DatosPersonalesTabProps) {
   const createMutation = useEstudiantes.useCreate()
   const updateMutation = useEstudiantes.useUpdate()
 
   const form = useForm<EstudianteFormValues>({
     resolver: zodResolver(schema),
-    defaultValues: FORM_DEFAULT_VALUES,
+    defaultValues: estudiante ? resetValuesFrom(estudiante) : FORM_DEFAULT_VALUES,
   })
 
   useEffect(() => {
-    if (open) {
-      form.reset(editing ? resetValuesFrom(editing) : FORM_DEFAULT_VALUES)
-    }
-  }, [open, editing, form])
+    if (estudiante && !form.formState.isDirty) form.reset(resetValuesFrom(estudiante))
+  }, [estudiante, form])
 
   async function onSubmit(values: EstudianteFormValues) {
     const body: CreateEstudianteRequest = {
@@ -98,31 +94,27 @@ export function EstudianteFormDialog({ open, onOpenChange, editing }: Estudiante
       seguroMedicoId: values.seguroMedicoId ?? undefined,
     }
     try {
-      if (editing) {
-        await updateMutation.mutateAsync({ id: editing.id, body })
+      if (estudiante) {
+        const updated = await updateMutation.mutateAsync({ id: estudiante.id, body })
         toast.success('Estudiante actualizado')
+        form.reset(resetValuesFrom(updated))
+        onCreated(updated)
       } else {
-        await createMutation.mutateAsync(body)
-        toast.success('Estudiante creado')
+        const created = await createMutation.mutateAsync(body)
+        toast.success('Estudiante creado. Ahora puede completar sus referencias e historial clínico.')
+        onCreated(created)
       }
-      onOpenChange(false)
     } catch (error) {
       mapApiErrorToForm(error as ApiError, form.setError)
     }
   }
 
   return (
-    <FormDialog
-      open={open}
-      onOpenChange={onOpenChange}
-      title={editing ? 'Editar estudiante' : 'Nuevo estudiante'}
-    >
-      <EstudianteForm
-        form={form}
-        onSubmit={onSubmit}
-        onCancel={() => onOpenChange(false)}
-        isPending={createMutation.isPending || updateMutation.isPending}
-      />
-    </FormDialog>
+    <EstudianteForm
+      form={form}
+      onSubmit={onSubmit}
+      onCancel={() => history.back()}
+      isPending={createMutation.isPending || updateMutation.isPending}
+    />
   )
 }

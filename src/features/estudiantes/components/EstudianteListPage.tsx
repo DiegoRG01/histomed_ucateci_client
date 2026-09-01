@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { PencilIcon, PlusIcon, SearchIcon, Trash2Icon } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -11,10 +11,9 @@ import { PaginationBar } from '@/components/shared/Pagination'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 import { useEstudiantes } from '../hooks/use-estudiantes'
 import type { EstudianteResponse } from '../types'
-import { EstudianteFormDialog } from './EstudianteFormDialog'
 
 export function EstudianteListPage() {
-  const [searchParams, setSearchParams] = useSearchParams()
+  const navigate = useNavigate()
   const [filtro, setFiltro] = useState('')
   const [debouncedFiltro, setDebouncedFiltro] = useState('')
   const [page, setPage] = useState(0)
@@ -38,56 +37,12 @@ export function EstudianteListPage() {
     setPage(0)
   }
 
-  const modoNuevo = searchParams.has('nuevo')
-  const editarParam = searchParams.get('editar')
-  const editarId =
-    editarParam !== null && editarParam !== '' && Number.isInteger(Number(editarParam))
-      ? Number(editarParam)
-      : undefined
-
-  const enPagina =
-    editarId !== undefined ? data?.content.find((est) => est.id === editarId) : undefined
-  const { data: editarData } = useEstudiantes.useGetById(
-    editarId !== undefined && !enPagina ? editarId : undefined,
-  )
-  const editing = enPagina ?? editarData ?? null
-  const dialogOpen = modoNuevo || editing !== null
-
-  function handleDialogOpenChange(open: boolean) {
-    if (open) return
-    setSearchParams(
-      (prev) => {
-        const next = new URLSearchParams(prev)
-        next.delete('nuevo')
-        next.delete('editar')
-        return next
-      },
-      { replace: true },
-    )
-  }
-
   function openCreate() {
-    setSearchParams(
-      (prev) => {
-        const next = new URLSearchParams(prev)
-        next.set('nuevo', '1')
-        next.delete('editar')
-        return next
-      },
-      { replace: true },
-    )
+    navigate('/estudiantes/nuevo')
   }
 
   function openEdit(row: EstudianteResponse) {
-    setSearchParams(
-      (prev) => {
-        const next = new URLSearchParams(prev)
-        next.set('editar', String(row.id))
-        next.delete('nuevo')
-        return next
-      },
-      { replace: true },
-    )
+    navigate(`/estudiantes/${row.id}/editar`)
   }
 
   const columns: Column<EstudianteResponse>[] = [
@@ -158,12 +113,6 @@ export function EstudianteListPage() {
         page={data?.number ?? 0}
         totalPages={data?.totalPages ?? 0}
         onPageChange={setPage}
-      />
-
-      <EstudianteFormDialog
-        open={dialogOpen}
-        onOpenChange={handleDialogOpenChange}
-        editing={editing}
       />
     </div>
   )

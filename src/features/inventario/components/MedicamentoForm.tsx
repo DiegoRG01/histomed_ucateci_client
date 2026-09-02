@@ -5,6 +5,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
 import { useTiposMedicamento } from '@/features/catalogos/hooks/useTiposMedicamento'
+import { useUnidadesMedida } from '@/features/catalogos/hooks/useUnidadesMedida'
 import type { TipoInsumo } from '../types'
 
 const tipoOptions: ComboboxOption[] = [
@@ -15,7 +16,7 @@ const tipoOptions: ComboboxOption[] = [
 type MedicamentoFormValues = {
   nombre: string
   tipo: TipoInsumo
-  unidadMedida: string
+  unidadMedidaId: number
   stockMinimo: number
   controlado: boolean
   concentracion: string
@@ -35,6 +36,11 @@ type MedicamentoFormProps = {
 export function MedicamentoForm({ form, onSubmit, onCancel, isPending }: MedicamentoFormProps) {
   const { data: tiposData } = useTiposMedicamento()
   const tiposMedicamento = tiposData?.content ?? []
+  const { data: unidadesData } = useUnidadesMedida()
+  const unidadOptions: ComboboxOption[] = (unidadesData ?? []).map((u) => ({
+    value: String(u.id),
+    label: `${u.nombre} (${u.abreviatura})`,
+  }))
 
   return (
     <form onSubmit={form.handleSubmit((v) => onSubmit(v as MedicamentoFormValues))} className="space-y-4">
@@ -60,10 +66,16 @@ export function MedicamentoForm({ form, onSubmit, onCancel, isPending }: Medicam
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="unidadMedida">Unidad de Medida</Label>
-        <Input id="unidadMedida" {...form.register('unidadMedida')} placeholder="Unidad de medida" />
-        {form.formState.errors.unidadMedida && (
-          <p className="text-sm text-destructive">{form.formState.errors.unidadMedida.message}</p>
+        <Label>Unidad de Medida</Label>
+        <Combobox
+          options={unidadOptions}
+          value={form.watch('unidadMedidaId') ? String(form.watch('unidadMedidaId')) : ''}
+          onChange={(value) => form.setValue('unidadMedidaId', Number(value))}
+          placeholder="Seleccione una unidad"
+          className="w-full"
+        />
+        {form.formState.errors.unidadMedidaId && (
+          <p className="text-sm text-destructive">{form.formState.errors.unidadMedidaId.message}</p>
         )}
       </div>
 

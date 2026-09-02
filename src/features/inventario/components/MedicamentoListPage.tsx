@@ -23,7 +23,7 @@ import { MedicamentoForm, type MedicamentoFormValues } from './MedicamentoForm'
 const schema = z.object({
   nombre: z.string().min(1, 'El nombre es obligatorio'),
   tipo: z.enum(['MEDICAMENTO', 'INSUMO']),
-  unidadMedida: z.string().min(1, 'La unidad de medida es obligatoria'),
+  unidadMedidaId: z.number().min(1, 'La unidad de medida es obligatoria'),
   stockMinimo: z.number().min(0, 'El stock mínimo debe ser mayor o igual a 0'),
   controlado: z.boolean(),
   concentracion: z.string(),
@@ -45,7 +45,7 @@ export function MedicamentoListPage() {
     defaultValues: {
       nombre: '',
       tipo: 'MEDICAMENTO',
-      unidadMedida: '',
+      unidadMedidaId: 0,
       stockMinimo: 0,
       controlado: false,
       concentracion: '',
@@ -83,7 +83,7 @@ export function MedicamentoListPage() {
     form.reset({
       nombre: '',
       tipo: 'MEDICAMENTO',
-      unidadMedida: '',
+      unidadMedidaId: 0,
       stockMinimo: 0,
       controlado: false,
       concentracion: '',
@@ -98,7 +98,7 @@ export function MedicamentoListPage() {
     form.reset({
       nombre: row.nombre,
       tipo: row.tipo,
-      unidadMedida: row.unidadMedida,
+      unidadMedidaId: row.unidadMedidaId,
       stockMinimo: row.stockMinimo,
       controlado: row.controlado,
       concentracion: row.concentracion,

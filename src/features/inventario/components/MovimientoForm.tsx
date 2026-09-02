@@ -3,13 +3,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
 import { useInsumos, useLotes } from '../hooks/useInventario'
 import type { TipoMovimiento } from '../types'
 
@@ -39,6 +33,26 @@ export function MovimientoForm({ form, onSubmit, onCancel, isPending }: Movimien
   const lotes = (lotesData?.content ?? []).filter(
     (lote) => lote.insumoId === selectedInsumoId && lote.activo,
   )
+
+  const insumoOptions: ComboboxOption[] = insumos.map((insumo) => ({
+    value: String(insumo.id),
+    label: insumo.nombre,
+  }))
+
+  const loteId = form.watch('loteId')
+  const loteOptions: ComboboxOption[] = lotes.map((lote) => ({
+    value: String(lote.id),
+    label: `${lote.numeroLote} — Disp: ${lote.cantidadDisponible}`,
+    keywords: [lote.numeroLote],
+  }))
+
+  const tipoMovimientoOptions: ComboboxOption[] = [
+    { value: 'ENTRADA', label: 'Entrada' },
+    { value: 'SALIDA', label: 'Salida' },
+    { value: 'AJUSTE', label: 'Ajuste' },
+    { value: 'MERMA', label: 'Merma' },
+  ]
+
   async function handleSubmit(values: MovimientoFormValues) {
     if (['SALIDA', 'AJUSTE', 'MERMA'].includes(values.tipo) && values.loteId) {
       const lote = lotes.find((l) => l.id === values.loteId)
@@ -56,24 +70,15 @@ export function MovimientoForm({ form, onSubmit, onCancel, isPending }: Movimien
     <form onSubmit={form.handleSubmit((v) => handleSubmit(v as MovimientoFormValues))} className="space-y-4">
       <div className="space-y-2">
         <Label>Insumo</Label>
-        <Select
-          value={form.watch('insumoId') ? String(form.watch('insumoId')) : ''}
-          onValueChange={(value) => {
+        <Combobox
+          options={insumoOptions}
+          value={selectedInsumoId ? String(selectedInsumoId) : ''}
+          onChange={(value) => {
             form.setValue('insumoId', Number(value))
             form.setValue('loteId', null)
           }}
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Seleccione un insumo" />
-          </SelectTrigger>
-          <SelectContent>
-            {insumos.map((insumo) => (
-              <SelectItem key={insumo.id} value={String(insumo.id)}>
-                {insumo.nombre}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          placeholder="Seleccione un insumo"
+        />
         {form.formState.errors.insumoId && (
           <p className="text-sm text-destructive">{form.formState.errors.insumoId.message}</p>
         )}
@@ -81,40 +86,23 @@ export function MovimientoForm({ form, onSubmit, onCancel, isPending }: Movimien
 
       <div className="space-y-2">
         <Label>Lote (opcional)</Label>
-        <Select
-          value={form.watch('loteId') ? String(form.watch('loteId')) : ''}
-          onValueChange={(value) => form.setValue('loteId', value ? Number(value) : null)}
+        <Combobox
+          options={loteOptions}
+          value={loteId ? String(loteId) : ''}
+          onChange={(value) => form.setValue('loteId', value ? Number(value) : null)}
           disabled={!selectedInsumoId}
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Sin lote" />
-          </SelectTrigger>
-          <SelectContent>
-            {lotes.map((lote) => (
-              <SelectItem key={lote.id} value={String(lote.id)}>
-                {lote.numeroLote} — Disp: {lote.cantidadDisponible}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          placeholder="Sin lote"
+        />
       </div>
 
       <div className="space-y-2">
         <Label>Tipo de Movimiento</Label>
-        <Select
+        <Combobox
+          options={tipoMovimientoOptions}
           value={form.watch('tipo')}
-          onValueChange={(value) => form.setValue('tipo', value as TipoMovimiento)}
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Seleccione un tipo" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="ENTRADA">Entrada</SelectItem>
-            <SelectItem value="SALIDA">Salida</SelectItem>
-            <SelectItem value="AJUSTE">Ajuste</SelectItem>
-            <SelectItem value="MERMA">Merma</SelectItem>
-          </SelectContent>
-        </Select>
+          onChange={(value) => form.setValue('tipo', value as TipoMovimiento)}
+          placeholder="Seleccione un tipo"
+        />
         {form.formState.errors.tipo && (
           <p className="text-sm text-destructive">{form.formState.errors.tipo.message}</p>
         )}

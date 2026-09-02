@@ -3,15 +3,14 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
 import { useTiposMedicamento } from '@/features/catalogos/hooks/useTiposMedicamento'
 import type { TipoInsumo } from '../types'
+
+const tipoOptions: ComboboxOption[] = [
+  { value: 'MEDICAMENTO', label: 'Medicamento' },
+  { value: 'INSUMO', label: 'Insumo' },
+]
 
 type MedicamentoFormValues = {
   nombre: string
@@ -49,18 +48,12 @@ export function MedicamentoForm({ form, onSubmit, onCancel, isPending }: Medicam
 
       <div className="space-y-2">
         <Label>Tipo</Label>
-        <Select
+        <Combobox
+          options={tipoOptions}
           value={form.watch('tipo')}
-          onValueChange={(value) => form.setValue('tipo', value as TipoInsumo)}
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Seleccione un tipo" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="MEDICAMENTO">Medicamento</SelectItem>
-            <SelectItem value="INSUMO">Insumo</SelectItem>
-          </SelectContent>
-        </Select>
+          onChange={(value) => form.setValue('tipo', value as TipoInsumo)}
+          placeholder="Seleccione un tipo"
+        />
         {form.formState.errors.tipo && (
           <p className="text-sm text-destructive">{form.formState.errors.tipo.message}</p>
         )}

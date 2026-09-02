@@ -2,13 +2,7 @@ import type { UseFormReturn } from 'react-hook-form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
 import { useInsumos } from '../hooks/useInventario'
 
 type LoteFormValues = {
@@ -30,26 +24,22 @@ type LoteFormProps = {
 export function LoteForm({ form, onSubmit, onCancel, isPending }: LoteFormProps) {
   const { data: insumosData } = useInsumos.useList()
   const insumos = insumosData?.content ?? []
+  const insumoOptions: ComboboxOption[] = insumos.map((insumo) => ({
+    value: String(insumo.id),
+    label: insumo.nombre,
+  }))
 
   return (
     <form onSubmit={form.handleSubmit((v) => onSubmit(v as LoteFormValues))} className="space-y-4">
       <div className="space-y-2">
         <Label>Insumo</Label>
-        <Select
+        <Combobox
+          options={insumoOptions}
           value={form.watch('insumoId') ? String(form.watch('insumoId')) : ''}
-          onValueChange={(value) => form.setValue('insumoId', Number(value))}
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Seleccione un insumo" />
-          </SelectTrigger>
-          <SelectContent>
-            {insumos.map((insumo) => (
-              <SelectItem key={insumo.id} value={String(insumo.id)}>
-                {insumo.nombre}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          onChange={(value) => form.setValue('insumoId', Number(value))}
+          placeholder="Seleccione un insumo"
+          className="w-full"
+        />
         {form.formState.errors.insumoId && (
           <p className="text-sm text-destructive">{form.formState.errors.insumoId.message}</p>
         )}

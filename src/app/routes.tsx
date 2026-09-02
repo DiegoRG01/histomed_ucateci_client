@@ -4,6 +4,7 @@ import { RoleGuard } from "@/app/routes/RoleGuard";
 import { AppLayout } from "@/app/layout/AppLayout";
 import { LoginPage } from "@/features/auth/components/LoginPage";
 import { TipoMedicamentoListPage } from "@/features/catalogos/components/TipoMedicamentoListPage";
+import { UnidadMedidaListPage } from "@/features/catalogos/components/UnidadMedidaListPage";
 import { UsuarioListPage } from "@/features/usuarios/components/UsuarioListPage";
 import { MedicamentoListPage } from "@/features/inventario/components/MedicamentoListPage";
 import { LoteInventarioListPage } from "@/features/inventario/components/LoteInventarioListPage";
@@ -91,6 +92,14 @@ export function AppRoutes() {
           element={
             <RoleGuard allow={["ADMIN", "ALMACEN"]}>
               <TipoMedicamentoListPage />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/catalogos/unidades-medida"
+          element={
+            <RoleGuard allow={["ADMIN", "ALMACEN"]}>
+              <UnidadMedidaListPage />
             </RoleGuard>
           }
         />

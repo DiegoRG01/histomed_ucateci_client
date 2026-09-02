@@ -73,7 +73,13 @@ export const navSections: NavSection[] = [
     label: 'Administración',
     items: [
       { label: 'Usuarios', path: '/usuarios', icon: Users, roles: ['ADMIN'] },
-      { label: 'Catálogos', path: '/catalogos/tipos-medicamento', icon: LayoutGrid, roles: ['ADMIN', 'ALMACEN'] },
+      {
+        label: 'Catálogos', icon: LayoutGrid, roles: ['ADMIN', 'ALMACEN'],
+        children: [
+          { label: 'Tipos de Medicamento', path: '/catalogos/tipos-medicamento', roles: ['ADMIN', 'ALMACEN'] },
+          { label: 'Unidades de Medida', path: '/catalogos/unidades-medida', roles: ['ADMIN', 'ALMACEN'] },
+        ],
+      },
       { label: 'Auditoría', path: '/auditoria', icon: Shield, roles: ['ADMIN'] },
     ],
   },

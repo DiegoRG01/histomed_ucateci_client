@@ -3,13 +3,7 @@ import type { UseFormReturn } from 'react-hook-form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Combobox, type ComboboxOption } from '@/components/ui/combobox'
 import { useMedicamentos } from '@/features/inventario/hooks/useInventario'
 
 export type MedicamentoHabitualFormValues = {
@@ -34,6 +28,10 @@ export function MedicamentoHabitualForm({
   const { data: medicamentosData } = useMedicamentos.useList({ size: 100 })
   const medicamentos = medicamentosData?.content ?? []
   const medicamentoId = form.watch('medicamentoId')
+  const medicamentoOptions: ComboboxOption[] = medicamentos.map((medicamento) => ({
+    value: String(medicamento.id),
+    label: medicamento.nombre,
+  }))
 
   return (
     <form
@@ -43,21 +41,12 @@ export function MedicamentoHabitualForm({
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label>Medicamento</Label>
-          <Select
+          <Combobox
+            options={medicamentoOptions}
             value={medicamentoId ? String(medicamentoId) : ''}
-            onValueChange={(value) => form.setValue('medicamentoId', Number(value))}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Seleccione un medicamento" />
-            </SelectTrigger>
-            <SelectContent>
-              {medicamentos.map((medicamento) => (
-                <SelectItem key={medicamento.id} value={String(medicamento.id)}>
-                  {medicamento.nombre}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            onChange={(value) => form.setValue('medicamentoId', Number(value))}
+            placeholder="Seleccione un medicamento"
+          />
           {form.formState.errors.medicamentoId && (
             <p className="text-sm text-destructive">{form.formState.errors.medicamentoId.message}</p>
           )}

@@ -1,49 +1,70 @@
-import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod/v4'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { toast } from 'sonner'
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod/v4";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 
-import { mapApiErrorToForm } from '@/lib/form-errors'
-import type { ApiError } from '@/lib/api-client'
-import { useEstudiantes } from '../hooks/use-estudiantes'
+import { mapApiErrorToForm } from "@/lib/form-errors";
+import type { ApiError } from "@/lib/api-client";
+import { useEstudiantes } from "../hooks/use-estudiantes";
 import type {
   CreateEstudianteRequest,
   EstudianteResponse,
   GrupoSanguineo,
   Sexo,
-} from '../types'
-import { EstudianteForm, type EstudianteFormValues } from './EstudianteForm'
+} from "../types";
+import { EstudianteForm, type EstudianteFormValues } from "./EstudianteForm";
 
 const schema = z.object({
-  matricula: z.string().min(1, 'La matrícula es obligatoria'),
-  cedula: z.string().min(1, 'La cédula es obligatoria'),
-  nombre: z.string().min(1, 'El nombre es obligatorio'),
-  apellido: z.string().min(1, 'El apellido es obligatorio'),
-  fechaNacimiento: z.string().min(1, 'La fecha de nacimiento es obligatoria'),
-  sexo: z.enum(['', 'M', 'F', 'OTRO']).refine((v) => v !== '', { message: 'Seleccione un sexo' }),
+  matricula: z
+    .string()
+    .regex(/^[0-9]+$/, "La matrícula debe ser un número")
+    .min(1, "La matrícula es obligatoria"),
+  cedula: z
+    .string()
+    .regex(/^[0-9]+$/, "La cédula debe ser un número")
+    .min(1, "La cédula es obligatoria"),
+  nombre: z.string().min(1, "El nombre es obligatorio"),
+  apellido: z.string().min(1, "El apellido es obligatorio"),
+  fechaNacimiento: z.string().min(1, "La fecha de nacimiento es obligatoria"),
+  sexo: z
+    .enum(["", "M", "F", "OTRO"])
+    .refine((v) => v !== "", { message: "Seleccione un sexo" }),
   grupoSanguineo: z
-    .enum(['', 'O_POS', 'O_NEG', 'A_POS', 'A_NEG', 'B_POS', 'B_NEG', 'AB_POS', 'AB_NEG'])
-    .refine((v) => v !== '', { message: 'Seleccione un grupo sanguíneo' }),
-  email: z.string().min(1, 'El email es obligatorio').email('Ingrese un email válido'),
+    .enum([
+      "",
+      "O_POS",
+      "O_NEG",
+      "A_POS",
+      "A_NEG",
+      "B_POS",
+      "B_NEG",
+      "AB_POS",
+      "AB_NEG",
+    ])
+    .refine((v) => v !== "", { message: "Seleccione un grupo sanguíneo" }),
+  email: z
+    .string()
+    .min(1, "El email es obligatorio")
+    .email("Ingrese un email válido"),
   telefono: z.string(),
-  carreraId: z.number().min(1, 'Seleccione una carrera'),
+  carreraId: z.number().min(1, "Seleccione una carrera"),
   seguroMedicoId: z.number().nullable(),
-})
+});
 
 const FORM_DEFAULT_VALUES: EstudianteFormValues = {
-  matricula: '',
-  cedula: '',
-  nombre: '',
-  apellido: '',
-  fechaNacimiento: '',
-  sexo: '',
-  grupoSanguineo: '',
-  email: '',
-  telefono: '',
+  matricula: "",
+  cedula: "",
+  nombre: "",
+  apellido: "",
+  fechaNacimiento: "",
+  sexo: "",
+  grupoSanguineo: "",
+  email: "",
+  telefono: "",
   carreraId: 0,
   seguroMedicoId: null,
-}
+};
 
 function resetValuesFrom(row: EstudianteResponse): EstudianteFormValues {
   return {
@@ -58,26 +79,32 @@ function resetValuesFrom(row: EstudianteResponse): EstudianteFormValues {
     telefono: row.telefono,
     carreraId: row.carreraId,
     seguroMedicoId: row.seguroMedicoId,
-  }
+  };
 }
 
 type DatosPersonalesTabProps = {
-  estudiante: EstudianteResponse | null
-  onCreated: (result: EstudianteResponse) => void
-}
+  estudiante: EstudianteResponse | null;
+  onCreated: (result: EstudianteResponse) => void;
+};
 
-export function DatosPersonalesTab({ estudiante, onCreated }: DatosPersonalesTabProps) {
-  const createMutation = useEstudiantes.useCreate()
-  const updateMutation = useEstudiantes.useUpdate()
+export function DatosPersonalesTab({
+  estudiante,
+  onCreated,
+}: DatosPersonalesTabProps) {
+  const createMutation = useEstudiantes.useCreate();
+  const updateMutation = useEstudiantes.useUpdate();
 
   const form = useForm<EstudianteFormValues>({
     resolver: zodResolver(schema),
-    defaultValues: estudiante ? resetValuesFrom(estudiante) : FORM_DEFAULT_VALUES,
-  })
+    defaultValues: estudiante
+      ? resetValuesFrom(estudiante)
+      : FORM_DEFAULT_VALUES,
+  });
 
   useEffect(() => {
-    if (estudiante && !form.formState.isDirty) form.reset(resetValuesFrom(estudiante))
-  }, [estudiante, form])
+    if (estudiante && !form.formState.isDirty)
+      form.reset(resetValuesFrom(estudiante));
+  }, [estudiante, form]);
 
   async function onSubmit(values: EstudianteFormValues) {
     const body: CreateEstudianteRequest = {
@@ -92,20 +119,25 @@ export function DatosPersonalesTab({ estudiante, onCreated }: DatosPersonalesTab
       telefono: values.telefono || undefined,
       carreraId: values.carreraId,
       seguroMedicoId: values.seguroMedicoId ?? undefined,
-    }
+    };
     try {
       if (estudiante) {
-        const updated = await updateMutation.mutateAsync({ id: estudiante.id, body })
-        toast.success('Estudiante actualizado')
-        form.reset(resetValuesFrom(updated))
-        onCreated(updated)
+        const updated = await updateMutation.mutateAsync({
+          id: estudiante.id,
+          body,
+        });
+        toast.success("Estudiante actualizado");
+        form.reset(resetValuesFrom(updated));
+        onCreated(updated);
       } else {
-        const created = await createMutation.mutateAsync(body)
-        toast.success('Estudiante creado. Ahora puede completar sus referencias e historial clínico.')
-        onCreated(created)
+        const created = await createMutation.mutateAsync(body);
+        toast.success(
+          "Estudiante creado. Ahora puede completar sus referencias e historial clínico.",
+        );
+        onCreated(created);
       }
     } catch (error) {
-      mapApiErrorToForm(error as ApiError, form.setError)
+      mapApiErrorToForm(error as ApiError, form.setError);
     }
   }
 
@@ -116,5 +148,5 @@ export function DatosPersonalesTab({ estudiante, onCreated }: DatosPersonalesTab
       onCancel={() => history.back()}
       isPending={createMutation.isPending || updateMutation.isPending}
     />
-  )
+  );
 }

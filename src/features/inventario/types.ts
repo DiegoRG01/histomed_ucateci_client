@@ -6,6 +6,7 @@ export type Insumo = {
   nombre: string
   tipo: TipoInsumo
   unidadMedida: string
+  unidadMedidaId: number
   stockMinimo: number
   activo: boolean
 }
@@ -17,7 +18,7 @@ export type Medicamento = Insumo & {
   tiposMedicamentoIds: number[]
 }
 
-export type CreateMedicamentoRequest = Omit<Medicamento, 'id' | 'activo'>
+export type CreateMedicamentoRequest = Omit<Medicamento, 'id' | 'activo' | 'unidadMedida'>
 
 export type LoteInventario = {
   id: number
